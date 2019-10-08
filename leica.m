@@ -79,3 +79,13 @@ title('z2 coordinate error vs Tilt')
 xlabel('Tilt, deg')
 ylabel('z2 coordinate error, m')
 grid on
+
+% 3d error
+xyz2_error_mod = sqrt((xyz2_error(1,:)).^2 + (xyz2_error(2,:)).^2 + (xyz2_error(3,:)).^2);
+
+figure
+plot(rad2deg(T_true),xyz2_error_mod, '.','LineWidth',2);
+title('zyz2 coordinate error vs Tilt')
+xlabel('Tilt, deg')
+ylabel('zyz2 coordinate error, m')
+grid on
