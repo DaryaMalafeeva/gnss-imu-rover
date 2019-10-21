@@ -1,20 +1,26 @@
 clear all; close all; clc;
 
-N = 1000;
+tic;
+
+N = 100;
+T_min = 0;
+
+
+
 
 % true angles
-R_true   = (rand(N,1)*2*pi - pi);
+R_true   = (rand(N,1)*2*pi - pi); 
 P_true   = (rand(N,1)*pi - pi/2);
 Y_true   = (rand(N,1)*2*pi - pi);
 RPY_true = [R_true P_true Y_true]';
 
 % stick length
-L_rpy = [ 0 0 2]';
+L_rpy = [ 0 0 -2]';
 
 % x2 coordinates in ecef
-x2_true   = randn(N,1);
-y2_true   = randn(N,1);
-z2_true   = randn(N,1);
+x2_true   = randn(N,1)*0;
+y2_true   = randn(N,1)*0;
+z2_true   = randn(N,1)*0;
 xyz2_true = [ x2_true y2_true z2_true]';
 
 % gnss noise rms 
@@ -30,9 +36,12 @@ RPY_new    = zeros(3,N);
 xyz2_new   = zeros(3,N);
 xyz2_error = zeros(3,N);
 T_true     = zeros(1,N);
+xyz2_error_mod = zeros(1,N);
+counter_xyz = zeros();
+
 
 % calculations
-for i = 1:N
+for i = 1:length(T_true)
 % transformation matrix from true angles
 C_rpy_ecef_true = rpy2mat(RPY_true(1:3,i));
 
@@ -40,10 +49,10 @@ C_rpy_ecef_true = rpy2mat(RPY_true(1:3,i));
 xyz1_true(1:3,i) = xyz2_true(1:3,i) + C_rpy_ecef_true * L_rpy;
 
 % noisy x1 coordinates
-xyz1_new(1:3,i) = xyz1_true(1:3,i) + sigma_gnss;
+xyz1_new(1:3,i) = xyz1_true(1:3,i) + randn(3,1)*sigma_gnss;
 
 % noisy angles
-RPY_new(1:3,i) = RPY_true(1:3,i) + sigma_imu;
+RPY_new(1:3,i) = RPY_true(1:3,i) + randn(3,1)*sigma_imu;
 
 % noisy transormation matrix
 C_rpy_ecef_new = rpy2mat(RPY_new(1:3,i));
@@ -52,40 +61,69 @@ C_rpy_ecef_new = rpy2mat(RPY_new(1:3,i));
 xyz2_new(1:3,i) = xyz1_new(1:3,i) - C_rpy_ecef_new * L_rpy;
 
 % x2 coordinates error
-xyz2_error(1:3,i) = xyz2_new(1:3,i) - xyz2_true(1:3,i);
+xyz2_error(1:3,i) = xyz2_true(1:3,i) - xyz2_new(1:3,i);
 
 % calculation of the tilt angle
-T_true(i) = asin( sin(R_true(i)) * sin(P_true(i)));
-end
-
-% plotting
-figure
-plot(rad2deg(T_true),(xyz2_error(1,:)), '.','LineWidth',2);
-title('x2 coordinate error vs Tilt')
-xlabel('Tilt, deg')
-ylabel('x2 coordinate error, m')
-grid on
-
-figure
-plot(rad2deg(T_true),xyz2_error(2,:), '.','LineWidth',2);
-title('y2 coordinate error vs Tilt')
-xlabel('Tilt, deg')
-ylabel('y2 coordinate error, m')
-grid on
-
-figure
-plot(rad2deg(T_true),xyz2_error(3,:), '.','LineWidth',2);
-title('z2 coordinate error vs Tilt')
-xlabel('Tilt, deg')
-ylabel('z2 coordinate error, m')
-grid on
+% T_true1(i) = asin( sin(R_true(i)) * sin(P_true(i)));
+T_true(i) = asin( sqrt( (cos(R_true(i))*sin(P_true(i)))^2 + sin(R_true(i))^2 )  ) ;
+% T_prov(i) = abs(R_true(i)) + abs(P_true(i));
 
 % 3d error
-xyz2_error_mod = sqrt((xyz2_error(1,:)).^2 + (xyz2_error(2,:)).^2 + (xyz2_error(3,:)).^2);
+xyz2_error_mod(i) = sqrt(xyz2_error(1:3,i)'*xyz2_error(1:3,i));
 
-figure
-plot(rad2deg(T_true),xyz2_error_mod, '.','LineWidth',2);
-title('zyz2 coordinate error vs Tilt')
-xlabel('Tilt, deg')
-ylabel('zyz2 coordinate error, m')
-grid on
+
+for j=1:90
+T_massive(:, 1)=[1:90]'*1;
+end
+T_massive =T_massive'; 
+
+if min(round(T_massive(j) - rad2deg(T_true(i)))) >= 1
+    
+k = min(round(T_massive(j) - rad2deg(T_true(i))));
+counter_xyz(k) = xyz2_error_mod(i) + counter_xyz(k);
+sum_counter(k) = sum_counter(k) + 1;
+
+end
+end
+
+
+
+%xyz2_error_mod = sqrt((xyz2_error(1,:)).^2 + (xyz2_error(2,:)).^2 + (xyz2_error(3,:)).^2);
+
+% plotting
+% figure
+% plot(rad2deg(T_true),(xyz2_error(1,:)), '.','LineWidth',2);
+% title('x2 coordinate error vs Tilt')
+% xlabel('Tilt, deg')
+% ylabel('x2 coordinate error, m')
+% grid on
+% 
+% figure
+% plot(rad2deg(T_true),xyz2_error(2,:), '.','LineWidth',2);
+% title('y2 coordinate error vs Tilt')
+% xlabel('Tilt, deg')
+% ylabel('y2 coordinate error, m')
+% grid on
+% 
+% figure
+% plot(rad2deg(T_true),xyz2_error(3,:), '.','LineWidth',2);
+% title('z2 coordinate error vs Tilt')
+% xlabel('Tilt, deg')
+% ylabel('z2 coordinate error, m')
+% grid on
+
+% figure
+% plot(T_true,xyz2_error_mod, '.','LineWidth',2);
+% title('zyz2 coordinate error vs Tilt')
+% xlabel('Tilt, deg')
+% ylabel('zyz2 coordinate error, m')
+% grid on
+
+% 
+% figure
+% plot(rad2deg(T_true),rad2deg(T_true1), '.','LineWidth',2);
+% title('Tilt true vs prov')
+% xlabel('Tilt, deg')
+% ylabel('Tilt prov, deg')
+% grid on
+toc;
