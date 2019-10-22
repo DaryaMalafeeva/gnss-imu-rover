@@ -2,7 +2,7 @@ clear all; close all; clc;
 
 tic;
 
-N = 100;
+N = 100000;
 T_min = 0;
 
 
@@ -37,8 +37,14 @@ xyz2_new   = zeros(3,N);
 xyz2_error = zeros(3,N);
 T_true     = zeros(1,N);
 xyz2_error_mod = zeros(1,N);
-counter_xyz = zeros();
 
+
+T_massive = [1:2
+    :90]'*1;
+T_massive = T_massive';
+
+counter_xyz = zeros(size(T_massive));
+sum_counter = zeros(size(T_massive));
 
 % calculations
 for i = 1:length(T_true)
@@ -70,21 +76,15 @@ T_true(i) = asin( sqrt( (cos(R_true(i))*sin(P_true(i)))^2 + sin(R_true(i))^2 )  
 
 % 3d error
 xyz2_error_mod(i) = sqrt(xyz2_error(1:3,i)'*xyz2_error(1:3,i));
+ 
 
-
-for j=1:90
-T_massive(:, 1)=[1:90]'*1;
-end
-T_massive =T_massive'; 
-
-if min(round(T_massive(j) - rad2deg(T_true(i)))) >= 1
-    
-k = min(round(T_massive(j) - rad2deg(T_true(i))));
+[tmp,k_arr] = min(abs(T_massive - rad2deg(T_true(i))));
+k = k_arr(1);
 counter_xyz(k) = xyz2_error_mod(i) + counter_xyz(k);
 sum_counter(k) = sum_counter(k) + 1;
 
 end
-end
+counter_xyz = counter_xyz./ sum_counter;
 
 
 
@@ -112,14 +112,14 @@ end
 % ylabel('z2 coordinate error, m')
 % grid on
 
-% figure
-% plot(T_true,xyz2_error_mod, '.','LineWidth',2);
-% title('zyz2 coordinate error vs Tilt')
-% xlabel('Tilt, deg')
-% ylabel('zyz2 coordinate error, m')
-% grid on
+figure
+plot(T_massive,counter_xyz, '.','LineWidth',2);
+title('zyz2 coordinate error vs Tilt')
+xlabel('Tilt, deg')
+ylabel('rms zyz2 coordinate error, m')
+grid on
 
-% 
+
 % figure
 % plot(rad2deg(T_true),rad2deg(T_true1), '.','LineWidth',2);
 % title('Tilt true vs prov')
