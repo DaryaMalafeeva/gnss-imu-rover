@@ -107,5 +107,4 @@ title('zyz2 coordinate error rms vs Tilt')
 xlabel('Tilt, deg')
 ylabel('rms zyz2 coordinate error, m')
 grid on
-
 toc;
