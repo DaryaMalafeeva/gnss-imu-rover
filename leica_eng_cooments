@@ -38,7 +38,7 @@ sigma_imu  = (0.011 + 0.017)/2;
 % degrees step for plotting
 deg_step = 2; 
 
-% array of tilt angles for pollting
+% array of tilt angles for plotting
 T_array      = [0: deg_step : 90]'*1;                      
 T_array      = T_array';
 
