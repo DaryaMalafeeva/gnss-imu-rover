@@ -14,22 +14,16 @@ T_true         = zeros(1,N);
 xyz2_error_mod = zeros(1,N);
 
 % true angles
-T_true       = rand(N,1) * pi/2;
-T_true       = T_true';
-Azimuth_true = rand(N,1) * 2 * pi;
-Azimuth_true = Azimuth_true';
-
-% pole length
-L = -1.8;
-L_xyz = [L * sin(T_true) .* cos(pi/2 - Azimuth_true);
-         L *sin(T_true) .* sin(pi/2 - Azimuth_true) ;
-         L * cos(T_true)];
+T_true         = rand(N,1) * pi/2;
+T_true         = T_true';
+Azimuth_true   = rand(N,1) * 2 * pi;
+Azimuth_true   = Azimuth_true';
 
 % true coordinates of the measured point      
-x2_true   = randn(N,1)*0;
-y2_true   = randn(N,1)*0;
-z2_true   = randn(N,1)*0;
-xyz2_true = [ x2_true y2_true z2_true]';
+x2_true        = randn(N,1)*0;
+y2_true        = randn(N,1)*0;
+z2_true        = randn(N,1)*0;
+xyz2_true      = [ x2_true y2_true z2_true]';
 
 % constants for noise calculation (in meters)
 sigma_gnss = (0.018 + 0.024)/2;       
@@ -39,14 +33,20 @@ sigma_imu  = (0.011 + 0.017)/2;
 deg_step = 2; 
 
 % array of tilt angles for plotting
-T_array      = [0: deg_step : 90]'*1;                      
-T_array      = T_array';
+T_array  = [0: deg_step : 90]'*1;                      
+T_array  = T_array';
 
 % sums calculation of the coordinates error for each tilt
-counter_xyz  = zeros(size(T_array));  
+counter_xyz = zeros(size(T_array));  
 
 % number of sums calculation for each tilt
-sum_counter  = zeros(size(T_array));  
+sum_counter = zeros(size(T_array));  
+
+% pole length
+L = -1.8;
+L_xyz = [L * sin(T_true) .* cos(pi/2 - Azimuth_true);
+         L *sin(T_true) .* sin(pi/2 - Azimuth_true) ;
+         L * cos(T_true)];
 
 for i = 1:length(T_true)
 % true coordinates of the antenna phase center point 
