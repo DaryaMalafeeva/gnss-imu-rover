@@ -1,7 +1,7 @@
 clear all; close all; clc;
 tic;
 % number of measured points
-N = 10000000;
+N = 10000;
 
 % empty matrices
 xyz1_true      = zeros(3,N);
@@ -19,7 +19,7 @@ Azimuth_true   = rand(N,1) * 2 * pi;
 Azimuth_true   = Azimuth_true';
 
 % pole length
-L      = -1.8;
+L      = 1.8;
 L_xyz  = [L * sin(T_true) .* cos(pi/2 - Azimuth_true);
           L * sin(T_true) .* sin(pi/2 - Azimuth_true);
           L * cos(T_true)];
@@ -31,7 +31,7 @@ z2_true    = randn(N,1) * 0;
 xyz2_true  = [ x2_true y2_true z2_true]';
 
 % constants for noise calculation (in meters)
-sigma_gnss = (0.018 + 0.024)/2;       
+sigma_gnss = 0*(0.018 + 0.024)/2;       
 sigma_imu  = (0.011 + 0.017)/2;       
 
 % degrees step for plotting
@@ -55,10 +55,15 @@ xyz1_true(1:3, i) = xyz2_true(1:3, i) + L_xyz(1:3, i);
 xyz1_new(1:3, i)   = xyz1_true(1:3, i) + randn(3, 1) * sigma_gnss;
 
 % noisy tilt angle
-T_new(1, i)        = T_true(1, i) + randn(1, 1)*sigma_imu;
+T_new(1, i)        = T_true(1, i) + randn(1, 1)*deg2rad(0.3);
+Azimuth_new(1, i)  = Azimuth_true(1, i) + randn(1, 1)*deg2rad(0.9);
 
 % noisy coordinates of measured point
-xyz2_new(1:3,i)   = xyz1_new(1:3,i) - L_xyz(1:3, i);
+L_xyz_tilted(1:3, i)  =  [L * sin(T_new(1, i)) .* cos(pi/2 - Azimuth_new(1, i));
+          L * sin(T_new(1, i)) .* sin(pi/2 - Azimuth_new(1, i));
+          L * cos(T_new(1, i))];
+      
+xyz2_new(1:3,i)   = xyz1_new(1:3,i) - L_xyz_tilted(1:3, i);
 
 % coordinates error for measured point 
 xyz2_error(1:3, i) = xyz2_true(1:3, i) - xyz2_new(1:3, i);
@@ -66,10 +71,10 @@ xyz2_error(1:3, i) = xyz2_true(1:3, i) - xyz2_new(1:3, i);
 % 3d coordinates error for measured point 
 xyz2_error_mod(i) = sqrt(xyz2_error(1:3, i)'*xyz2_error(1:3, i));
 
-T_true(i) = rad2deg(T_true(i));
+% T_true(i) = rad2deg(T_true(i));
 
 % index of  coordinates error
-[tmp,k_arr] = min(abs(T_array - T_true(i)));   
+[tmp,k_arr] = min(abs(T_array - rad2deg(T_true(i))));   
 k = k_arr(1);
 
 % rms calculating
