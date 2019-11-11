@@ -86,7 +86,7 @@ counter_xyz = sqrt(counter_xyz./ sum_counter);
 
 % plotting
 % figure
-% plot(rad2deg(T_true),(xyz2_error(1,:)), '.','LineWidth',2);
+% plot(rad2deg(T_true),(xyz2_error(1,:)), '.','LineWidth',1);
 % title('x2 coordinate error vs Tilt')
 % xlabel('Tilt, deg')
 % ylabel('x2 coordinate error, m')
@@ -107,7 +107,7 @@ counter_xyz = sqrt(counter_xyz./ sum_counter);
 % grid on
 
 figure
-plot(T_array,counter_xyz, '-*','LineWidth',2);
+plot(T_array,counter_xyz, '-*','LineWidth',1);
 title('zyz2 coordinate error rms vs Tilt')
 xlabel('Tilt, deg')
 ylabel('rms zyz2 coordinate error, m')
