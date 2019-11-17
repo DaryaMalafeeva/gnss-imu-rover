@@ -108,19 +108,16 @@ counter_xyz = sqrt(counter_xyz./ sum_counter);
 T_array_new = T_array(2:30);
 counter_xyz_new = counter_xyz(2:30);
 figure
-<<<<<<< HEAD
 plot(T_array,counter_xyz, '-*','LineWidth',1);
 title('zyz2 coordinate error rms vs Tilt')
 xlabel('Tilt, deg')
 ylabel('rms zyz2 coordinate error, m')
-=======
 plot(T_array_new,counter_xyz_new, '-*','LineWidth',2)
 hold on
 plot([1,29], [0.008,0.02],'--','LineWidth',2);
 % title('zyz2 coordinate error rms vs Tilt')
 % xlabel('Tilt, deg')
 % ylabel('rms zyz2 coordinate error, m')
->>>>>>> f777acee323ae1a2e23ff5a2a7e1996cb90ea16c
 grid on
 
 % ylabel('Ошибка, связаннная с ИНС, м')
@@ -129,6 +126,5 @@ xlabel('Наклон вехи, град')
 title('')
 ylim([0 0.025])
 legend('модель','данные Leica')
-
 
 toc;
