@@ -13,7 +13,7 @@ T_true         = zeros(1,N);
 xyz2_error_mod = zeros(1,N);
 
 % true angles
-T_true         = rand(N,1) * pi/2;
+T_true         = rand(N,1) * pi/6;
 T_true         = T_true';
 Azimuth_true   = rand(N,1) * 2 * pi;
 Azimuth_true   = Azimuth_true';
@@ -56,7 +56,7 @@ xyz1_new(1:3, i)   = xyz1_true(1:3, i) + randn(3, 1) * sigma_gnss;
 
 % noisy tilt angle
 T_new(1, i)        = T_true(1, i) + randn(1, 1)*deg2rad(0.3);
-Azimuth_new(1, i)  = Azimuth_true(1, i) + randn(1, 1)*deg2rad(0.9);
+Azimuth_new(1, i)  = Azimuth_true(1, i) + randn(1, 1)*deg2rad(1.3);
 
 % noisy coordinates of measured point
 L_xyz_tilted(1:3, i)  =  [L * sin(T_new(1, i)) .* cos(pi/2 - Azimuth_new(1, i));
@@ -105,12 +105,30 @@ counter_xyz = sqrt(counter_xyz./ sum_counter);
 % xlabel('Tilt, deg')
 % ylabel('z2 coordinate error, m')
 % grid on
-
+T_array_new = T_array(2:30);
+counter_xyz_new = counter_xyz(2:30);
 figure
+<<<<<<< HEAD
 plot(T_array,counter_xyz, '-*','LineWidth',1);
 title('zyz2 coordinate error rms vs Tilt')
 xlabel('Tilt, deg')
 ylabel('rms zyz2 coordinate error, m')
+=======
+plot(T_array_new,counter_xyz_new, '-*','LineWidth',2)
+hold on
+plot([1,29], [0.008,0.02],'--','LineWidth',2);
+% title('zyz2 coordinate error rms vs Tilt')
+% xlabel('Tilt, deg')
+% ylabel('rms zyz2 coordinate error, m')
+>>>>>>> f777acee323ae1a2e23ff5a2a7e1996cb90ea16c
 grid on
+
+% ylabel('Ошибка, связаннная с ИНС, м')
+ylabel('СКОш, связаннная с ИНС, м')
+xlabel('Наклон вехи, град')
+title('')
+ylim([0 0.025])
+legend('модель','данные Leica')
+
 
 toc;
